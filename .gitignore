@@ -35,3 +35,5 @@ build/
 ##propiedades spring boot##
 *.properties
 
+## Archivos de configuración de Spring Boot (ejemplos) ##
+!src\main\resources\application.properties.example
