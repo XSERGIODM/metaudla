@@ -1,5 +1,6 @@
 package com.udlaverso.metaudla.models;
 
+import com.udlaverso.metaudla.enums.TipoLike;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,24 +13,27 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "favorito")
-public class Favorito {
-    //atributos de la clase
+@Entity(name = "like_comentario")
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"usuario_id", "comentario_id"}))
+public class LikeComentario {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(nullable = false)
-    LocalDateTime fechaCreacion;
-
-    //relaciones
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     Usuario usuario;
 
     @ManyToOne
-    @JoinColumn(name = "isla_id")
-    Isla isla;
+    @JoinColumn(name = "comentario_id")
+    Comentario comentario;
+
+    @Enumerated(EnumType.STRING)
+    TipoLike tipo;
+
+    @Column(nullable = false)
+    LocalDateTime fechaCreacion;
 
     @PrePersist
     protected void onCreate() {

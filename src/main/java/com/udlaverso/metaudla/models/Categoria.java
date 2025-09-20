@@ -31,6 +31,7 @@ public class Categoria {
     @Enumerated(EnumType.STRING)
     EstadoBasico estado;
 
+    //Relaciones
     @ManyToMany
     List<Isla> islas;
     
