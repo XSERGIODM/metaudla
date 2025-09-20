@@ -1,7 +1,17 @@
 package com.udlaverso.metaudla.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum Rol {
-    ESTUDIANTE,
-    PROFESOR,
-    ADMINISTRADOR
+
+    ESTUDIANTE("Estudiante"),
+    PROFESOR("Profesor"),
+    ADMINISTRADOR("Administrador");
+
+    private final String value;
+
+    Rol(String value) {
+        this.value = value;
+    }
 }

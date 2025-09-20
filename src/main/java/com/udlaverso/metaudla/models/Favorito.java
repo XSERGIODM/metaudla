@@ -10,17 +10,14 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "puntuacion")
-public class Puntuacion {
-
-    // Atributos de la clase
+@Entity(name = "favorito")
+public class Favorito {
+    //atributos de la clase
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Column
-    int calificacion;
 
-    // Relaciones
+    //relaciones
     @ManyToOne
     Usuario usuario;
     @ManyToOne

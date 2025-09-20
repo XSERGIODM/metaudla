@@ -1,6 +1,7 @@
 package com.udlaverso.metaudla.models;
 
 import com.udlaverso.metaudla.enums.TipoLike;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,14 +11,20 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @AllArgsConstructor
 @NoArgsConstructor
-public class Like {
+@Entity(name = "me_gusta")
+public class MeGusta {
     //atributos de la clase
-    int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
 
     //relaciones
+    @ManyToOne
     Usuario usuario;
+    @ManyToOne
     Isla isla;
 
     //Enums
+    @Enumerated(EnumType.STRING)
     TipoLike tipo;
 }
