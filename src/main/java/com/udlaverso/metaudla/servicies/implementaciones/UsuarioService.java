@@ -216,6 +216,11 @@ public class UsuarioService implements IUsuarioService {
         usuarioRepository.delete(usuario);
     }
 
+    // Búsquedas avanzadas
+    public List<Usuario> buscarPorNombreOrUsername(String nombre, String username) {
+        return usuarioRepository.findByNombreOrUsername(nombre, username);
+    }
+
     // Estadísticas
     public long contarUsuariosActivos() {
         return usuarioRepository.countByEstado(EstadoBasico.HABILITADO);

@@ -31,18 +31,18 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     long countByRol(Rol rol);
 
     // Búsquedas avanzadas
-    @Query("SELECT u FROM Usuario u WHERE u.estado = :estado AND u.rol = :rol")
+    @Query("SELECT u FROM usuario u WHERE u.estado = :estado AND u.rol = :rol")
     List<Usuario> findByEstadoAndRol(@Param("estado") EstadoBasico estado, @Param("rol") Rol rol);
 
-    @Query("SELECT u FROM Usuario u WHERE u.nombre LIKE %:nombre% OR u.username LIKE %:username%")
+    @Query("SELECT u FROM usuario u WHERE u.nombre LIKE %:nombre% OR u.username LIKE %:username%")
     List<Usuario> findByNombreOrUsername(@Param("nombre") String nombre, @Param("username") String username);
 
     // Usuarios con actividad reciente
-    @Query("SELECT u FROM Usuario u WHERE u.updatedAt > :fecha ORDER BY u.updatedAt DESC")
+    @Query("SELECT u FROM usuario u WHERE u.updatedAt > :fecha ORDER BY u.updatedAt DESC")
     List<Usuario> findUsuariosActivosRecientemente(@Param("fecha") java.time.LocalDateTime fecha);
 
     // Usuarios creados en un período
-    @Query("SELECT u FROM Usuario u WHERE u.createdAt BETWEEN :inicio AND :fin")
+    @Query("SELECT u FROM usuario u WHERE u.createdAt BETWEEN :inicio AND :fin")
     List<Usuario> findUsuariosCreadosEntre(@Param("inicio") java.time.LocalDateTime inicio,
                                           @Param("fin") java.time.LocalDateTime fin);
 }
