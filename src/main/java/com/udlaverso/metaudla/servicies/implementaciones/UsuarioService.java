@@ -1,9 +1,10 @@
-package com.udlaverso.metaudla.servicies;
+package com.udlaverso.metaudla.servicies.implementaciones;
 
 import com.udlaverso.metaudla.enums.EstadoBasico;
 import com.udlaverso.metaudla.enums.Rol;
 import com.udlaverso.metaudla.models.Usuario;
 import com.udlaverso.metaudla.repositories.UsuarioRepository;
+import com.udlaverso.metaudla.servicies.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

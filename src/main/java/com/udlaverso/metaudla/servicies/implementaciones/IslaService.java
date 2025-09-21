@@ -1,9 +1,11 @@
-package com.udlaverso.metaudla.servicies;
+package com.udlaverso.metaudla.servicies.implementaciones;
 
 import com.udlaverso.metaudla.enums.EstadoBasico;
 import com.udlaverso.metaudla.enums.TipoLike;
 import com.udlaverso.metaudla.models.*;
 import com.udlaverso.metaudla.repositories.IslaRepository;
+import com.udlaverso.metaudla.servicies.IIslaService;
+import com.udlaverso.metaudla.servicies.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
