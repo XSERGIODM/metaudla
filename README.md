@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Metaudla - Backend del Metaverso Educativo
 
 ## Descripción
