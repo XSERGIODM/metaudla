@@ -46,8 +46,9 @@ public class Isla {
     @Pattern(regexp = "^https?://.*", message = "El link de descarga debe comenzar con http:// o https://")
     String linkDescarga;
 
-    @Column
-    String autor;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name ="autor_id")
+    Usuario autor;
 
     @ElementCollection
     @CollectionTable(name = "isla_etiquetas", joinColumns = @JoinColumn(name = "isla_id"))
@@ -98,76 +99,6 @@ public class Isla {
     //Enums
     @Enumerated(EnumType.STRING)
     EstadoBasico estado;
-
-    // Métodos helper
-    public void recalcularPromedio(List<Puntuacion> puntuaciones) {
-        if (puntuaciones == null || puntuaciones.isEmpty()) {
-            this.promedioPuntuacion = BigDecimal.ZERO;
-        } else {
-            double avg = puntuaciones.stream()
-                .mapToInt(Puntuacion::getCalificacion)
-                .average()
-                .orElse(0.0);
-            this.promedioPuntuacion = BigDecimal.valueOf(avg).setScale(2, RoundingMode.HALF_UP);
-        }
-    }
-
-    public void recalcularEstadisticas(List<MeGusta> meGustas, List<Comentario> comentarios, List<Favorito> favoritos) {
-        // Recalcular Me Gustas y No Me Gustas
-        if (meGustas != null) {
-            this.totalMeGustas = (int) meGustas.stream()
-                .filter(mg -> mg.getTipo() == TipoLike.ME_GUSTA)
-                .count();
-
-            this.totalNoMeGustas = (int) meGustas.stream()
-                .filter(mg -> mg.getTipo() == TipoLike.NO_ME_GUSTA)
-                .count();
-        } else {
-            this.totalMeGustas = 0;
-            this.totalNoMeGustas = 0;
-        }
-
-        // Recalcular total de comentarios (solo comentarios principales, no respuestas)
-        if (comentarios != null) {
-            this.totalComentarios = (int) comentarios.stream()
-                .filter(c -> c.getComentarioPadre() == null) // Solo comentarios raíz
-                .count();
-        } else {
-            this.totalComentarios = 0;
-        }
-
-        // Recalcular total de favoritos
-        if (favoritos != null) {
-            this.totalFavoritos = favoritos.size();
-        } else {
-            this.totalFavoritos = 0;
-        }
-    }
-
-    public void recalcularEstadisticas() {
-        recalcularEstadisticas(this.meGustas, this.comentarios, this.favoritos);
-    }
-
-    // Métodos para obtener estadísticas específicas
-    public int getTotalLikes() {
-        return totalMeGustas;
-    }
-
-    public int getTotalDislikes() {
-        return totalNoMeGustas;
-    }
-
-    public int getTotalComentarios() {
-        return totalComentarios;
-    }
-
-    public int getTotalFavoritos() {
-        return totalFavoritos;
-    }
-
-    public int getTotalInteracciones() {
-        return totalMeGustas + totalNoMeGustas + totalComentarios + totalFavoritos;
-    }
 
     @PrePersist
     protected void onCreate() {

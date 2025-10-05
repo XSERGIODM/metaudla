@@ -68,6 +68,9 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario")
     List<Comentario> comentarios = new ArrayList<>();
 
+    @OneToMany(mappedBy = "autor")
+    List<Isla> islas = new ArrayList<>();
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
