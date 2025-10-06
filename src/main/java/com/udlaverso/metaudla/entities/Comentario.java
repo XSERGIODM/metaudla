@@ -1,4 +1,4 @@
-package com.udlaverso.metaudla.models;
+package com.udlaverso.metaudla.entities;
 
 import com.udlaverso.metaudla.enums.EstadoModeracion;
 import jakarta.persistence.*;
@@ -58,11 +58,6 @@ public class Comentario {
     @ManyToOne
     @JoinColumn(name = "isla_id")
     Isla isla;
-
-    // Métodos helper
-    public boolean esRespuesta() {
-        return comentarioPadre != null;
-    }
 
     @PrePersist
     protected void onCreate() {

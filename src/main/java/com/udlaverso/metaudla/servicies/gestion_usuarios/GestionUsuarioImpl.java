@@ -1,130 +1,97 @@
 package com.udlaverso.metaudla.servicies.gestion_usuarios;
 
-
-import com.udlaverso.metaudla.DTO.UsuarioDTO;
-import com.udlaverso.metaudla.DTO.create.CreateUsuarioDTO;
-import com.udlaverso.metaudla.DTO.update.UpdateUsuarioDTO;
+import com.udlaverso.metaudla.DTOs.usuario.UsuarioDtoCreate;
+import com.udlaverso.metaudla.DTOs.usuario.UsuarioResponseDto;
 import com.udlaverso.metaudla.enums.EstadoBasico;
 import com.udlaverso.metaudla.enums.Rol;
-import com.udlaverso.metaudla.models.Usuario;
+import com.udlaverso.metaudla.entities.Usuario;
+import com.udlaverso.metaudla.mappers.UsuarioMapper;
 import com.udlaverso.metaudla.repositories.UsuarioRepository;
-import com.udlaverso.metaudla.utils.MapDTO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class GestionUsuarioImpl implements IGestionUsuario {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UsuarioMapper usuarioMapper;
+
 
     @Override
-    public UsuarioDTO crearUsuario(CreateUsuarioDTO createUsuarioDTO) {
-        Usuario usuario = new Usuario();
-        usuario.setNombre(createUsuarioDTO.getNombre());
-        usuario.setUsername(createUsuarioDTO.getUsername());
-        usuario.setCorreo(createUsuarioDTO.getCorreo());
-        usuario.setContrasena(passwordEncoder.encode(createUsuarioDTO.getContrasena()));
-        usuario.setRol(Rol.ESTUDIANTE);
-        usuario.setCreatedBy(usuario);
-        usuario.setUpdatedBy(usuario);
-
-        return MapDTO.mapModelToDTO(usuarioRepository.save(usuario));
+    public UsuarioResponseDto crearUsuario(UsuarioDtoCreate usuarioDtoCreate) {
+        Usuario usuario = usuarioMapper.toEntity(usuarioDtoCreate);
+        usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
+        usuario = usuarioRepository.save(usuario);
+        return usuarioMapper.toDto(usuario);
     }
 
     @Override
-    public Optional<UsuarioDTO> obtenerUsuarioPorId(Long id) {
-        Usuario usuario = usuarioRepository.findById(id).orElse(null);
-        if (usuario != null) {
-            return Optional.of(MapDTO.mapModelToDTO(usuario));
-        }
+    public Optional<UsuarioResponseDto> obtenerUsuarioPorId(Long id) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<UsuarioDTO> obtenerUsuarioPorUsername(String username) {
-        Usuario usuario = usuarioRepository.findUsuarioByUsername(username);
-        if (usuario != null) {
-            return Optional.of(MapDTO.mapModelToDTO(usuario));
-        }
+    public Optional<UsuarioResponseDto> obtenerUsuarioPorUsername(String username) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<UsuarioDTO> obtenerUsuarioPorCorreo(String correo) {
-        Usuario usuario = usuarioRepository.findUsuarioByCorreo(correo);
-        if (usuario != null) {
-            return Optional.of(MapDTO.mapModelToDTO(usuario));
-        }
+    public Optional<UsuarioResponseDto> obtenerUsuarioPorCorreo(String correo) {
         return Optional.empty();
     }
 
     @Override
-    public List<UsuarioDTO> obtenerTodosLosUsuarios() {
+    public List<UsuarioResponseDto> obtenerTodosLosUsuarios() {
         List<Usuario> usuarios = usuarioRepository.findAll();
-
+        List<UsuarioResponseDto> usuarioResponseDtos = new ArrayList<>();
         if (!usuarios.isEmpty()) {
-            return MapDTO.listMapModelToDTO(usuarios);
+            for (Usuario usuario : usuarios) {
+                usuarioResponseDtos.add(usuarioMapper.toDto(usuario));
+            }
         }
-        return List.of();
-    }
-
-    @Override
-    public Optional<UsuarioDTO> actualizarUsuario(Long id, UpdateUsuarioDTO updateUsuarioDTO) {
-        return Optional.empty();
+        return usuarioResponseDtos;
     }
 
     @Override
     public boolean eliminarUsuario(Long id) {
-        Usuario usuario = usuarioRepository.findById(id).orElse(null);
-        if (usuario != null) {
-            usuarioRepository.delete(usuario);
-            return true;
-        }
         return false;
     }
 
     @Override
     public boolean existeUsuarioPorId(Long id) {
-        return usuarioRepository.existsById(id);
+        return false;
     }
 
     @Override
     public boolean existeUsuarioPorUsername(String username) {
-        return usuarioRepository.existsByUsername(username);
+        return false;
     }
 
     @Override
     public boolean existeUsuarioPorCorreo(String correo) {
-        return usuarioRepository.existsByCorreo(correo);
+        return false;
     }
 
     @Override
     public long contarUsuarios() {
-        return usuarioRepository.count();
+        return 0;
     }
 
     @Override
-    public List<UsuarioDTO> obtenerUsuariosPorEstado(EstadoBasico estado) {
-        List<Usuario> usuarios = usuarioRepository.findUsuarioByEstado(estado);
-        if (!usuarios.isEmpty()) {
-            return MapDTO.listMapModelToDTO(usuarios);
-        }
+    public List<UsuarioResponseDto> obtenerUsuariosPorEstado(EstadoBasico estado) {
         return List.of();
     }
 
     @Override
-    public List<UsuarioDTO> obtenerUsuariosPorRol(Rol rol) {
-        List<Usuario> usuarios = usuarioRepository.findAllByRol(rol);
-        if (!usuarios.isEmpty()) {
-            return MapDTO.listMapModelToDTO(usuarios);
-        }
+    public List<UsuarioResponseDto> obtenerUsuariosPorRol(Rol rol) {
         return List.of();
     }
 }

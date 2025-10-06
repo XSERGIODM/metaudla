@@ -34,7 +34,7 @@ public class IslaDtoResponse implements Serializable {
     Long version;
     List<CategoriaDto> categorias;
     List<Long> favoritoIds;
-    List<int> puntuacioneCalificacions;
+    List<Integer> puntuacioneCalificacions;
     List<TipoLike> meGustaTipos;
     EstadoBasico estado;
 

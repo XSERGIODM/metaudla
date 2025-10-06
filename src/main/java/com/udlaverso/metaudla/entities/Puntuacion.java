@@ -1,4 +1,4 @@
-package com.udlaverso.metaudla.models;
+package com.udlaverso.metaudla.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;

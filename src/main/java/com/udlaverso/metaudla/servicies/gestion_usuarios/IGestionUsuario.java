@@ -1,8 +1,7 @@
 package com.udlaverso.metaudla.servicies.gestion_usuarios;
 
-import com.udlaverso.metaudla.DTO.UsuarioDTO;
-import com.udlaverso.metaudla.DTO.create.CreateUsuarioDTO;
-import com.udlaverso.metaudla.DTO.update.UpdateUsuarioDTO;
+import com.udlaverso.metaudla.DTOs.usuario.UsuarioDtoCreate;
+import com.udlaverso.metaudla.DTOs.usuario.UsuarioResponseDto;
 import com.udlaverso.metaudla.enums.EstadoBasico;
 import com.udlaverso.metaudla.enums.Rol;
 
@@ -15,37 +14,37 @@ public interface IGestionUsuario {
 
     /**
      * Crear un nuevo usuario
-     * @param createUsuarioDTO Datos del usuario a crear
+     * @param usuarioDtoCreate Datos del usuario a crear
      * @return DTO del usuario creado
      */
-    UsuarioDTO crearUsuario(CreateUsuarioDTO createUsuarioDTO);
+    UsuarioResponseDto crearUsuario(UsuarioDtoCreate usuarioDtoCreate);
 
     /**
      * Obtener usuario por ID
      * @param id ID del usuario
      * @return Optional con el DTO del usuario si existe
      */
-    Optional<UsuarioDTO> obtenerUsuarioPorId(Long id);
+    Optional<UsuarioResponseDto> obtenerUsuarioPorId(Long id);
 
     /**
      * Obtener usuario por username
      * @param username Username del usuario
      * @return Optional con el DTO del usuario si existe
      */
-    Optional<UsuarioDTO> obtenerUsuarioPorUsername(String username);
+    Optional<UsuarioResponseDto> obtenerUsuarioPorUsername(String username);
 
     /**
      * Obtener usuario por correo
      * @param correo Correo del usuario
      * @return Optional con el DTO del usuario si existe
      */
-    Optional<UsuarioDTO> obtenerUsuarioPorCorreo(String correo);
+    Optional<UsuarioResponseDto> obtenerUsuarioPorCorreo(String correo);
 
     /**
      * Obtener todos los usuarios
      * @return Lista de DTOs de usuarios
      */
-    List<UsuarioDTO> obtenerTodosLosUsuarios();
+    List<UsuarioResponseDto> obtenerTodosLosUsuarios();
 
     /**
      * Actualizar usuario existente
@@ -53,7 +52,7 @@ public interface IGestionUsuario {
      * @param updateUsuarioDTO Datos a actualizar
      * @return Optional con el DTO del usuario actualizado si existe
      */
-    Optional<UsuarioDTO> actualizarUsuario(Long id, UpdateUsuarioDTO updateUsuarioDTO);
+    //Optional<UsuarioResponseDto> actualizarUsuario(Long id,);
 
     /**
      * Eliminar usuario por ID
@@ -96,12 +95,12 @@ public interface IGestionUsuario {
      * @param estado Estado de los usuarios
      * @return Lista de DTOs de usuarios con el estado especificado
      */
-    List<UsuarioDTO> obtenerUsuariosPorEstado(EstadoBasico estado);
+    List<UsuarioResponseDto> obtenerUsuariosPorEstado(EstadoBasico estado);
 
     /**
      * Obtener usuarios por rol
      * @param rol Rol de los usuarios
      * @return Lista de DTOs de usuarios con el rol especificado
      */
-    List<UsuarioDTO> obtenerUsuariosPorRol(Rol rol);
+    List<UsuarioResponseDto> obtenerUsuariosPorRol(Rol rol);
 }

@@ -1,4 +1,4 @@
-package com.udlaverso.metaudla;
+package com.udlaverso.metaudla.DTOs.usuario;
 
 import com.udlaverso.metaudla.enums.EstadoBasico;
 import com.udlaverso.metaudla.enums.Rol;

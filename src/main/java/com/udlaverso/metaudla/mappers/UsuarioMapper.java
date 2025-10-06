@@ -1,9 +1,12 @@
-package com.udlaverso.metaudla;
+package com.udlaverso.metaudla.mappers;
 
+import com.udlaverso.metaudla.DTOs.usuario.UsuarioDtoCreate;
+import com.udlaverso.metaudla.DTOs.usuario.UsuarioResponseDto;
 import com.udlaverso.metaudla.entities.Usuario;
 import org.mapstruct.*;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)public interface UsuarioMapper {
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+public interface UsuarioMapper {
     @Mapping(source = "updatedByNombre", target = "updatedBy.nombre")
     @Mapping(source = "updatedById", target = "updatedBy.id")
     @Mapping(source = "createdByRol", target = "createdBy.rol")
@@ -32,7 +35,17 @@ import org.mapstruct.*;
         usuario.getIslas().forEach(isla -> isla.setAutor(usuario));
     }
 
-    @InheritInverseConfiguration(name = "toEntity")UsuarioResponseDto toDto(Usuario usuario);
+    @InheritInverseConfiguration(name = "toEntity")
+    UsuarioResponseDto toDto(Usuario usuario);
 
-    @InheritConfiguration(name = "toEntity")@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)Usuario partialUpdate(UsuarioResponseDto usuarioResponseDto, @MappingTarget Usuario usuario);
+    @InheritConfiguration(name = "toEntity")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Usuario partialUpdate(UsuarioResponseDto usuarioResponseDto, @MappingTarget Usuario usuario);
+
+    Usuario toEntity(UsuarioDtoCreate usuarioDtoCreate);
+
+    UsuarioDtoCreate toDto1(Usuario usuario);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Usuario partialUpdate(UsuarioDtoCreate usuarioDtoCreate, @MappingTarget Usuario usuario);
 }

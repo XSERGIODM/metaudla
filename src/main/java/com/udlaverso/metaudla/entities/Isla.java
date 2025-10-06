@@ -1,13 +1,11 @@
-package com.udlaverso.metaudla.models;
+package com.udlaverso.metaudla.entities;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.udlaverso.metaudla.enums.EstadoBasico;
-import com.udlaverso.metaudla.enums.TipoLike;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
@@ -67,22 +65,6 @@ public class Isla {
     @Version
     @Column
     Long version;
-
-    @Column(precision = 3, scale = 2)
-    BigDecimal promedioPuntuacion;
-
-    // Estadísticas calculadas
-    @Column(nullable = false)
-    int totalMeGustas = 0;
-
-    @Column(nullable = false)
-    int totalNoMeGustas = 0;
-
-    @Column(nullable = false)
-    int totalComentarios = 0;
-
-    @Column(nullable = false)
-    int totalFavoritos = 0;
 
     //relaciones
     @ManyToMany

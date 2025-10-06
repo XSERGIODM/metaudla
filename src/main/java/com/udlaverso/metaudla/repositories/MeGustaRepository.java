@@ -1,6 +1,6 @@
 package com.udlaverso.metaudla.repositories;
 
-import com.udlaverso.metaudla.models.MeGusta;
+import com.udlaverso.metaudla.entities.MeGusta;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
