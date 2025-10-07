@@ -47,7 +47,8 @@ public class GestionIslaImpl implements IGestionIsla{
 
     @Override
     public Page<IslaDtoResponse> obtenerIslasPaginadas(Pageable pageable) {
-        return null;
+        Page<Isla> islasPage = islaRepository.findAll(pageable);
+        return islasPage.map(islaMapper::toDto);
     }
 
     @Override
