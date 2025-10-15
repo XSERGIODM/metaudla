@@ -3,6 +3,7 @@ package com.udlaverso.metaudla.servicies.gestion_islas;
 import com.udlaverso.metaudla.DTOs.isla.IslaDtoCreate;
 import com.udlaverso.metaudla.DTOs.isla.IslaDtoResponse;
 import com.udlaverso.metaudla.entities.Isla;
+import com.udlaverso.metaudla.enums.TipoLike;
 import com.udlaverso.metaudla.mappers.IslaMapper;
 import com.udlaverso.metaudla.repositories.IslaRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,8 @@ public class GestionIslaImpl implements IGestionIsla{
 
     @Override
     public Optional<IslaDtoResponse> obtenerIslaPorId(Long id) {
-        return Optional.empty();
+        Optional<Isla> islaOptional = islaRepository.findById(id);
+        return islaOptional.map(islaMapper::toDto);
     }
 
     @Override
@@ -89,5 +91,16 @@ public class GestionIslaImpl implements IGestionIsla{
     @Override
     public boolean existeIsla(Long id) {
         return false;
+    }
+
+    @Override
+    public Page<IslaDtoResponse> obtenerIslasTendencias(Pageable pageable) {
+        Page<Isla>islaPage= islaRepository.findAllSortedByMeGustasCount(TipoLike.ME_GUSTA,pageable);
+        if (!islaPage.isEmpty()) {
+            System.out.println("Se encontraron islas");
+            return islaPage.map(islaMapper::toDto);
+        }
+        System.out.println("No se encontraron islas");
+        return Page.empty();
     }
 }
