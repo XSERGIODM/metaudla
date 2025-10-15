@@ -29,7 +29,8 @@ public class GestionIslaImpl implements IGestionIsla{
 
     @Override
     public Optional<IslaDtoResponse> obtenerIslaPorId(Long id) {
-        return Optional.empty();
+        Optional<Isla> islaOptional = islaRepository.findById(id);
+        return islaOptional.map(islaMapper::toDto);
     }
 
     @Override
