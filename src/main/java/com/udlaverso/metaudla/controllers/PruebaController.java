@@ -23,8 +23,4 @@ public class PruebaController {
     public ResponseEntity<List<UsuarioResponseDto>> listar() {
         return ResponseEntity.ok(gestionUsuario.obtenerTodosLosUsuarios());
     }
-    @GetMapping("/listar/isla")
-    public ResponseEntity<List<IslaDtoResponse>> listarIsla() {
-        return ResponseEntity.ok(gestionIsla.obtenerTodasIslas());
-    }
 }
