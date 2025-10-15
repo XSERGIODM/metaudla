@@ -97,4 +97,6 @@ public interface IGestionIsla {
      * @return true si existe, false en caso contrario
      */
     boolean existeIsla(Long id);
+
+    Page<IslaDtoResponse> obtenerIslasTendencias(Pageable pageable);
 }
