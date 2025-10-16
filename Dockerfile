@@ -1,12 +1,12 @@
-FROM maven:3.8.4-openjdk-21 as build
-COPY pom.xml /
-RUN mvn dependency:go-offline
+# Etapa 1: Construcción
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /app
+COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
-RUN ls -la /target
 
+# Etapa 2: Ejecución
 FROM openjdk:21-jdk-slim
-ARG JAR_FILE=target/metaudla-0.0.1-SNAPSHOT.jar
-COPY ${JAR_FILE} app_metaudla.jar
+COPY --from=build /app/target/metaudla-0.0.1-SNAPSHOT.jar app_metaudla.jar
 EXPOSE 8081
 ENTRYPOINT ["java", "-jar", "app_metaudla.jar"]
