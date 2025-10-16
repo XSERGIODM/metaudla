@@ -7,7 +7,7 @@ services:
     depends_on:
       - db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/meta-verso?allowPublicKeyRetrieval\=true&useSSL\=false&serverTimezone\=UTC
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3307/meta-verso?allowPublicKeyRetrieval\=true&useSSL\=false&serverTimezone\=UTC
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=!LH%2Avqc2%mWb7lF29#
 
