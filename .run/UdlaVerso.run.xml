@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="UdlaVerso" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <envs>
+      <env name="SPRING_DATASOURCE_PASSWORD" value="!LH%2Avqc2%mWb7lF29#" />
+      <env name="SPRING_DATASOURCE_URL" value="jdbc:mysql://173.212.209.197:3306/meta-verso?allowPublicKeyRetrieval=true&amp;useSSL=false&amp;serverTimezone=UTC" />
+      <env name="SPRING_DATASOURCE_USERNAME" value="root" />
+    </envs>
+    <module name="metaudla" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.udlaverso.metaudla.MetaudlaApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
