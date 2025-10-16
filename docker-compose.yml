@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/meta-verso?allowPublicKeyRetrieval\=true&useSSL\=false&serverTimezone\=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=!LH%2Avqc2%mWb7lF29#
+
+  db:
+    image: mysql:8.0
+    container_name: db
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=!LH%2Avqc2%mWb7lF29#
+      - MYSQL_DATABASE=meta-verso
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=!LH%2Avqc2%mWb7lF29#
+    volumes:
+      - db_data:/var/lib/mysql
+volumes:
+  db_data:
