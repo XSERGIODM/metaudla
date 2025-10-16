@@ -3,7 +3,7 @@ services:
   app:
     build: .
     ports:
-      - "8080:8080"
+      - "8081:8081"
     depends_on:
       - db
     environment:
@@ -15,7 +15,7 @@ services:
     image: mysql:8.0
     container_name: db
     ports:
-      - "3306:3306"
+      - "3307:3307"
     environment:
       - MYSQL_ROOT_PASSWORD=!LH%2Avqc2%mWb7lF29#
       - MYSQL_DATABASE=meta-verso
