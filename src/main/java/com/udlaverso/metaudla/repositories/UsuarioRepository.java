@@ -22,4 +22,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     List<Usuario> findUsuarioByEstado(EstadoBasico estado);
 
+    Usuario findByUsernameOrCorreo(String username, String correo);
+
 }
