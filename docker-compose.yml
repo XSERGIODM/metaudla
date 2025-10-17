@@ -5,7 +5,7 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/meta-verso?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3307/meta-verso?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root123
     restart: always
@@ -14,9 +14,9 @@ services:
         condition: service_healthy
   db:
     image: mysql:8.0.33
-    container_name: mysql
+    container_name: mysql-udla
     ports:
-      - "3306:3306"
+      - "3307:3307"
     environment:
       - MYSQL_ROOT_PASSWORD=root123
       - MYSQL_DATABASE=meta-verso
