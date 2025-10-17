@@ -10,7 +10,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=root123
     restart: always
     depends_on:
-      db:
+      dbudlaverso:
         condition: service_healthy
   dbudlaverso:
     image: mysql:8.0.33
