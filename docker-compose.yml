@@ -5,24 +5,25 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://dbudlaverso:3307/meta-verso?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_URL=jdbc:mysql://dbudlaverso:3306/meta-verso?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root123
     restart: always
     depends_on:
       dbudlaverso:
         condition: service_healthy
+
   dbudlaverso:
     image: mysql:8.0.33
-    container_name: mysql
+    container_name: mysql-udla
     ports:
-      - "3307:3307"
+      - "3307:3306"  # <- host:container (3307 en tu máquina, 3306 dentro del contenedor)
     environment:
       - MYSQL_ROOT_PASSWORD=root123
       - MYSQL_DATABASE=meta-verso
     restart: always
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
