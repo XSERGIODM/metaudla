@@ -14,7 +14,7 @@ services:
         condition: service_healthy
   db:
     image: mysql:8.0.33
-    container_name: mysql-udla
+    container_name: mysqludla
     ports:
       - "3307:3307"
     environment:
