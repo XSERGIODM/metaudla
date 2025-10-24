@@ -96,20 +96,4 @@ public class GestionUsuarioImpl implements IGestionUsuario {
     public List<UsuarioResponseDto> obtenerUsuariosPorRol(Rol rol) {
         return List.of();
     }
-
-    @Override
-    public Optional<UsuarioResponseDto> autenticarUsuario(String usernameOrEmail, String contrasena) {
-        // Buscar usuario por username o correo
-        Optional<Usuario> usuarioOpt = Optional.ofNullable(usuarioRepository.findByUsernameOrCorreo(usernameOrEmail, usernameOrEmail));
-
-        if (usuarioOpt.isPresent()) {
-            Usuario usuario = usuarioOpt.get();
-            // Verificar contraseña
-            if (passwordEncoder.matches(contrasena, usuario.getContrasena())) {
-                return Optional.of(usuarioMapper.toDto(usuario));
-            }
-        }
-
-        return Optional.empty();
-    }
 }

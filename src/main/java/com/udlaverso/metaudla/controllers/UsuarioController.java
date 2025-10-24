@@ -46,31 +46,5 @@ public class UsuarioController {
         return ResponseEntity.ok(gestionUsuario.crearUsuario(usuarioDtoCreate));
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequest) {
-        System.out.println("Login controller: " + loginRequest.toString());
-        // Autenticar usuario
-        Optional<UsuarioResponseDto> usuarioOpt = gestionUsuario.autenticarUsuario(
-            loginRequest.getUsernameOrEmail(),
-            loginRequest.getContrasena()
-        );
 
-        if (usuarioOpt.isEmpty()) {
-            return ResponseEntity.status(401).build();
-        }
-
-        UsuarioResponseDto usuario = usuarioOpt.get();
-
-        // Generar token JWT
-        String token = jwtService.generateToken(
-            new org.springframework.security.core.userdetails.User(
-                usuario.getUsername(),
-                "",
-                java.util.Collections.emptyList()
-            )
-        );
-
-        LoginResponseDto response = new LoginResponseDto(token, usuario);
-        return ResponseEntity.ok(response);
-    }
 }

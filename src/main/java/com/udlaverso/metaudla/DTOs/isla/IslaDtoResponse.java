@@ -43,6 +43,7 @@ public class IslaDtoResponse implements Serializable {
      */
     @Value
     public static class CategoriaDto implements Serializable {
+        Long id;
         String nombre;
         String descripcion;
     }

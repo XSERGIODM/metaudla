@@ -103,14 +103,4 @@ public interface IGestionUsuario {
      * @return Lista de DTOs de usuarios con el rol especificado
      */
     List<UsuarioResponseDto> obtenerUsuariosPorRol(Rol rol);
-
-    // ========== AUTENTICACIÓN ==========
-
-    /**
-     * Autenticar usuario con username/correo y contraseña
-     * @param usernameOrEmail Username o correo del usuario
-     * @param contrasena Contraseña del usuario
-     * @return Optional con el DTO del usuario si las credenciales son válidas
-     */
-    Optional<UsuarioResponseDto> autenticarUsuario(String usernameOrEmail, String contrasena);
 }
