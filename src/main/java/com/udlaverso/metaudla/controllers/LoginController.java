@@ -13,8 +13,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/login")
-@CrossOrigin("*")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class LoginController {
 
     private final JwtService jwtService;
@@ -22,8 +22,7 @@ public class LoginController {
 
     @PostMapping()
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequest) {
-        System.out.println("Login recibido: " + loginRequest.toString());
-        // Autenticar usuario
+
         Optional<UsuarioResponseDto> usuarioOpt = gestionLogin.autenticarUsuario(
                 loginRequest.getUsernameOrEmail(),
                 loginRequest.getContrasena()
@@ -35,7 +34,6 @@ public class LoginController {
 
         UsuarioResponseDto usuario = usuarioOpt.get();
 
-        // Generar token JWT
         String token = jwtService.generateToken(
                 new org.springframework.security.core.userdetails.User(
                         usuario.getUsername(),
@@ -45,7 +43,6 @@ public class LoginController {
         );
 
         LoginResponseDto response = new LoginResponseDto(token, usuario);
-        System.out.println("Login exitoso: " + response.toString());
         return ResponseEntity.ok(response);
     }
 }

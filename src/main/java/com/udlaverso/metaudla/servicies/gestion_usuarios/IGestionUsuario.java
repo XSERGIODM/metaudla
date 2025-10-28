@@ -4,6 +4,8 @@ import com.udlaverso.metaudla.DTOs.usuario.UsuarioDtoCreate;
 import com.udlaverso.metaudla.DTOs.usuario.UsuarioResponseDto;
 import com.udlaverso.metaudla.enums.EstadoBasico;
 import com.udlaverso.metaudla.enums.Rol;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,9 +44,10 @@ public interface IGestionUsuario {
 
     /**
      * Obtener todos los usuarios
+     *
      * @return Lista de DTOs de usuarios
      */
-    List<UsuarioResponseDto> obtenerTodosLosUsuarios();
+    Page<UsuarioResponseDto> obtenerTodosLosUsuarios(Pageable pageable);
 
     /**
      * Actualizar usuario existente
@@ -103,4 +106,12 @@ public interface IGestionUsuario {
      * @return Lista de DTOs de usuarios con el rol especificado
      */
     List<UsuarioResponseDto> obtenerUsuariosPorRol(Rol rol);
+
+    UsuarioResponseDto cambiarContrasena(Long id, String contrasenaVieja, String contrasenaNueva);
+
+    void deshabilitarUsuario(Long id);
+
+    void habilitarUsuario(Long id);
+
+    Optional<UsuarioResponseDto> actualizarUsuario(UsuarioDtoCreate usuarioDtoCreate);
 }

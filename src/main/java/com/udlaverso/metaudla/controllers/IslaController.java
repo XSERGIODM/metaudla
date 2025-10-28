@@ -1,5 +1,6 @@
 package com.udlaverso.metaudla.controllers;
 
+import com.udlaverso.metaudla.DTOs.isla.IslaDtoCreate;
 import com.udlaverso.metaudla.DTOs.isla.IslaDtoResponse;
 import com.udlaverso.metaudla.servicies.gestion_islas.IGestionIsla;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +49,17 @@ public class IslaController {
         IslaDtoResponse islaDTORespuesta = gestionIsla.obtenerIslaPorId(id).orElse(null);
         return ResponseEntity.ok(islaDTORespuesta);
     }
+
+    // Agregar en IslaController.java
+    @GetMapping("/autor/{autorId}")
+    public ResponseEntity<List<IslaDtoResponse>> obtenerIslasPorAutor(@PathVariable Long autorId) {
+        return ResponseEntity.ok(gestionIsla.obtenerIslasPorAutor(autorId));
+    }
+
+    @PostMapping
+    public ResponseEntity<IslaDtoResponse> crearIsla(@RequestBody IslaDtoCreate islaDtoCreate) {
+        return ResponseEntity.ok(gestionIsla.crearIsla(islaDtoCreate));
+    }
+
 
 }
