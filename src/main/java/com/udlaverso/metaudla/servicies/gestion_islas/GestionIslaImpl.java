@@ -100,6 +100,11 @@ public class GestionIslaImpl implements IGestionIsla{
             System.out.println("Se encontraron islas");
             return islaPage.map(islaMapper::toDto);
         }
+        Page<Isla>islaPage2= islaRepository.findAll(pageable);
+        if (!islaPage2.isEmpty()) {
+            System.out.println("Se encontraron islas");
+            return islaPage2.map(islaMapper::toDto);
+        }
         System.out.println("No se encontraron islas");
         return Page.empty();
     }
