@@ -58,7 +58,8 @@ public class SecurityConfig {
                 "http://127.0.0.1:4200",  // IP local
                 "http://127.0.0.1:4201",  // IP local (alternativo)
                 "https://metaudla-frontend.vercel.app",  // Production
-                "https://metaudla-frontend-xsergiodms-projects.vercel.app"
+                "https://metaudla-frontend-xsergiodms-projects.vercel.app",
+                "https://metaudla-frontend-msrrbu9tf-xsergiodms-projects.vercel.app"
         ));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
