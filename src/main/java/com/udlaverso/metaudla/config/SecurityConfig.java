@@ -54,7 +54,8 @@ public class SecurityConfig {
         // ✅ ESPECÍFICO: Solo orígenes conocidos
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:4200",   // Angular dev server
-                "http://localhost:4201",   // Angular dev server (alternativo)
+                "http://localhost:4201",
+                "https://localhost:4200",// Angular dev server (alternativo)
                 "http://127.0.0.1:4200",  // IP local
                 "http://127.0.0.1:4201",  // IP local (alternativo)
                 "https://metaudla-frontend.vercel.app",  // Production
