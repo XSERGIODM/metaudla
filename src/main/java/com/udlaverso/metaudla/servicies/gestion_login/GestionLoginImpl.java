@@ -20,7 +20,7 @@ public class GestionLoginImpl implements IGestionLogin {
 
 
     public Optional<UsuarioResponseDto> autenticarUsuario(String usernameOrEmail, String contrasena) {
-        Optional<Usuario> usuarioOpt = Optional.ofNullable(usuarioRepository.findByUsernameOrCorreo(usernameOrEmail, usernameOrEmail));
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByUsernameOrCorreo(usernameOrEmail, usernameOrEmail);
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
             if (passwordEncoder.matches(contrasena, usuario.getContrasena())) {

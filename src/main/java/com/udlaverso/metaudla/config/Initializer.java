@@ -109,7 +109,7 @@ public class Initializer implements CommandLineRunner {
 
         // Crear islas por defecto si no hay ninguna
         if (islaRepository.count() == 0) {
-            Usuario admin = usuarioRepository.findUsuarioByUsername("admin");
+            Usuario admin = usuarioRepository.findUsuarioByUsername("admin").orElse(null);
 
             Isla isla1 = new Isla();
             isla1.setNombre("Introducción a la Programación");

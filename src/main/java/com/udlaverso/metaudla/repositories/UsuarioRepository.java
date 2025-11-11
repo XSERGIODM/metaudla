@@ -7,12 +7,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
-    Usuario findUsuarioByUsername(String username);
+    Optional<Usuario> findUsuarioByUsername(String username);
 
-    Usuario findUsuarioByCorreo(String correo);
+    Optional<Usuario> findUsuarioByCorreo(String correo);
 
     boolean existsByUsername(String username);
 
@@ -22,6 +23,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     List<Usuario> findUsuarioByEstado(EstadoBasico estado);
 
-    Usuario findByUsernameOrCorreo(String username, String correo);
+    Optional<Usuario> findByUsernameOrCorreo(String username, String correo);
 
 }

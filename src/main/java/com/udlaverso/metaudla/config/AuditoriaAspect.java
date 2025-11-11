@@ -111,7 +111,7 @@ public class AuditoriaAspect {
                 // Si el principal es un UserDetails, extraer el username
                 if (authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.User userDetails) {
                     String username = userDetails.getUsername();
-                    return usuarioRepository.findByUsernameOrCorreo(username, username);
+                    return usuarioRepository.findByUsernameOrCorreo(username, username).orElse(null);
                 }
                 // Si ya es un Usuario, devolverlo directamente
                 else if (authentication.getPrincipal() instanceof Usuario) {
