@@ -6,7 +6,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Etapa 2: Ejecución
-FROM openjdk:21-slim
+FROM eclipse-temurin:21-jre
 COPY --from=build /app/target/metaudla-0.0.1-SNAPSHOT.jar app_metaudla.jar
 EXPOSE 8081
 ENTRYPOINT ["java", "-jar", "app_metaudla.jar"]
