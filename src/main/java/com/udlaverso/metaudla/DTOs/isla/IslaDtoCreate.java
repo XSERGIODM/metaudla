@@ -13,8 +13,8 @@ import java.util.List;
 public class IslaDtoCreate implements Serializable {
     String nombre;
     String descripcion;
-    List<String> imagenes;
-    List<String> videos;
+    List<@Pattern(regexp = "^https?://.*", message = "La URL de imagen debe comenzar con http:// o https://") String> imagenes;
+    List<@Pattern(regexp = "^https?://.*", message = "La URL de video debe comenzar con http:// o https://") String> videos;
     @Pattern(message = "El link de descarga debe comenzar con http:// o https://", regexp = "^https?://.*")
     String linkDescarga;
     Long autorId;
