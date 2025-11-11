@@ -90,9 +90,14 @@ public class SecurityConfig {
                         "/scalar/**",
                         "/docs",
                         "/docs/**",
-                        "/api/isla/**",
+                        "/api/isla",
+                        "/api/isla/paginadas",
+                        "/api/isla/tendencias",
+                        "/api/isla/{id}",
+                        "/api/isla/autor/{autorId}",
                         "/api/categorias/**"
                 ).permitAll()
+                .requestMatchers("/api/isla").authenticated()
                 .anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

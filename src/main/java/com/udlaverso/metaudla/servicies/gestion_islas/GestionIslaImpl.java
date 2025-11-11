@@ -6,7 +6,9 @@ import com.udlaverso.metaudla.entities.Isla;
 import com.udlaverso.metaudla.enums.EstadoBasico;
 import com.udlaverso.metaudla.enums.TipoLike;
 import com.udlaverso.metaudla.mappers.IslaMapper;
+import com.udlaverso.metaudla.mappers.UsuarioMapper;
 import com.udlaverso.metaudla.repositories.IslaRepository;
+import com.udlaverso.metaudla.repositories.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,7 @@ public class GestionIslaImpl implements IGestionIsla{
 
     private final IslaRepository islaRepository;
     private final IslaMapper islaMapper;
+    private final UsuarioRepository usuarioRepository;
 
     @Override
     public Isla crearIsla(IslaDtoCreate islaDto) {
@@ -74,7 +77,12 @@ public class GestionIslaImpl implements IGestionIsla{
 
     @Override
     public List<IslaDtoResponse> obtenerIslasPorAutor(Long autorId) {
-        return List.of();
+        List<IslaDtoResponse> islaDtoResponses = new ArrayList<>();
+        List<Isla> islas = usuarioRepository.findById(autorId).get().getIslas();
+        for (Isla isla : islas) {
+            islaDtoResponses.add(islaMapper.toDto(isla));
+        }
+        return islaDtoResponses;
     }
 
     @Override
