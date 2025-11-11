@@ -8,23 +8,36 @@ import com.udlaverso.metaudla.enums.Rol;
 import com.udlaverso.metaudla.repositories.CategoriaRepository;
 import com.udlaverso.metaudla.repositories.IslaRepository;
 import com.udlaverso.metaudla.repositories.UsuarioRepository;
+import com.udlaverso.metaudla.servicies.MinioService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class Initializer implements CommandLineRunner {
 
     private final UsuarioRepository usuarioRepository;
     private final CategoriaRepository categoriaRepository;
     private final IslaRepository islaRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MinioService minioService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -130,6 +143,140 @@ public class Initializer implements CommandLineRunner {
             islaRepository.save(isla3);
 
             System.out.println("Islas por defecto creadas.");
+
+            // Crear bucket único "isla" y cargar assets a MinIO y actualizar URLs
+            cargarAssetsAMinio();
+        }
+    }
+
+    private void cargarAssetsAMinio() {
+        log.info("Iniciando carga de assets a MinIO...");
+
+        try {
+            // Obtener todas las islas creadas
+            List<Isla> islas = islaRepository.findAll();
+            if (islas.isEmpty()) {
+                log.warn("No se encontraron islas para cargar assets.");
+                return;
+            }
+
+            // Usar bucket único "isla" para todas las islas
+            String bucketName = "isla";
+            log.info("Verificando/creando bucket único: {}", bucketName);
+            minioService.createBucket(bucketName);
+
+            // Mapas para almacenar URLs por isla
+            Map<Long, List<String>> imagenesPorIsla = new HashMap<>();
+            Map<Long, List<String>> videosPorIsla = new HashMap<>();
+
+            // Cargar imágenes y videos para cada isla
+            for (Isla isla : islas) {
+                Long islaId = isla.getId();
+
+                // Cargar imágenes con prefijo correcto
+                List<String> imagenesUrls = cargarArchivos(bucketName, "assets/image/", islaId + "/imagen/");
+                if (!imagenesUrls.isEmpty()) {
+                    imagenesPorIsla.put(islaId, imagenesUrls);
+                    log.info("Imágenes cargadas para isla {}: {}", islaId, imagenesUrls.size());
+                }
+
+                // Cargar videos con prefijo correcto
+                List<String> videosUrls = cargarArchivos(bucketName, "assets/video/", islaId + "/video/");
+                if (!videosUrls.isEmpty()) {
+                    videosPorIsla.put(islaId, videosUrls);
+                    log.info("Videos cargados para isla {}: {}", islaId, videosUrls.size());
+                }
+            }
+
+            // Después de tener todas las URLs, actualizar las entidades Isla
+            for (Isla isla : islas) {
+                Long islaId = isla.getId();
+                List<String> imagenes = imagenesPorIsla.get(islaId);
+                if (imagenes != null && !imagenes.isEmpty()) {
+                    isla.setImagenes(imagenes);
+                }
+                List<String> videos = videosPorIsla.get(islaId);
+                if (videos != null && !videos.isEmpty()) {
+                    isla.setVideos(videos);
+                }
+                // Guardar la isla actualizada
+                islaRepository.save(isla);
+            }
+
+            log.info("Carga de assets a MinIO completada exitosamente.");
+
+        } catch (Exception e) {
+            log.error("Error durante la carga de assets a MinIO: {}", e.getMessage(), e);
+        }
+    }
+
+    private List<String> cargarArchivos(String bucketName, String assetsPath, String prefix) {
+        List<String> urls = new ArrayList<>();
+
+        try {
+            // Obtener archivos desde resources
+            Resource resource = new ClassPathResource(assetsPath);
+            if (!resource.exists()) {
+                log.warn("Directorio de assets no encontrado: {}", assetsPath);
+                return urls;
+            }
+
+            Path assetsDir = Paths.get(resource.getURI());
+            if (!Files.exists(assetsDir) || !Files.isDirectory(assetsDir)) {
+                log.warn("Directorio de assets no es válido: {}", assetsPath);
+                return urls;
+            }
+
+            // Listar archivos en el directorio
+            Files.list(assetsDir).forEach(filePath -> {
+                if (Files.isRegularFile(filePath)) {
+                    try {
+                        String fileName = filePath.getFileName().toString();
+                        String objectName = prefix + fileName;
+
+                        // Determinar content type
+                        String contentType = determinarContentType(fileName);
+
+                        // Subir archivo a MinIO
+                        try (var inputStream = Files.newInputStream(filePath)) {
+                            long size = Files.size(filePath);
+                            minioService.uploadFile(bucketName, objectName, inputStream, size, contentType);
+                            log.info("Archivo subido: {} -> {}", fileName, objectName);
+                        }
+
+                        // Generar URL presigned (expira en 1 año = 31536000 segundos)
+                        String presignedUrl = minioService.getPresignedUrl(bucketName, objectName, 31536000);
+                        urls.add(presignedUrl);
+
+                    } catch (Exception e) {
+                        log.error("Error al procesar archivo {}: {}", filePath.getFileName(), e.getMessage());
+                    }
+                }
+            });
+
+        } catch (IOException e) {
+            log.error("Error al acceder al directorio de assets {}: {}", assetsPath, e.getMessage());
+        }
+
+        return urls;
+    }
+
+    private String determinarContentType(String fileName) {
+        String lowerFileName = fileName.toLowerCase();
+        if (lowerFileName.endsWith(".jpg") || lowerFileName.endsWith(".jpeg")) {
+            return "image/jpeg";
+        } else if (lowerFileName.endsWith(".png")) {
+            return "image/png";
+        } else if (lowerFileName.endsWith(".gif")) {
+            return "image/gif";
+        } else if (lowerFileName.endsWith(".mp4")) {
+            return "video/mp4";
+        } else if (lowerFileName.endsWith(".avi")) {
+            return "video/x-msvideo";
+        } else if (lowerFileName.endsWith(".mov")) {
+            return "video/quicktime";
+        } else {
+            return "application/octet-stream"; // Tipo por defecto
         }
     }
 }

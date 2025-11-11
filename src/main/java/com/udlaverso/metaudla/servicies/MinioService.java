@@ -3,6 +3,7 @@ package com.udlaverso.metaudla.servicies;
 import io.minio.*;
 import io.minio.http.Method;
 import io.minio.messages.Item;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class MinioService {
 
     private final MinioClient minioClient;
@@ -92,16 +94,35 @@ public class MinioService {
 
     public String getPresignedUrl(String bucketName, String objectName, int expirySeconds) {
         try {
-            return minioClient.getPresignedObjectUrl(
+            // Validar que el objeto existe antes de generar la URL
+            minioClient.statObject(
+                StatObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(objectName)
+                    .build()
+            );
+
+            // Limitar la expiración a un máximo de 7 días (604800 segundos) para evitar errores de MinIO
+            int maxExpirySeconds = 604800; // 7 días
+            int actualExpirySeconds = Math.min(expirySeconds, maxExpirySeconds);
+
+            log.debug("Generating presigned URL for bucket: {}, object: {}, expiry: {} seconds", bucketName, objectName, actualExpirySeconds);
+
+            String presignedUrl = minioClient.getPresignedObjectUrl(
                 GetPresignedObjectUrlArgs.builder()
                     .method(Method.GET)
                     .bucket(bucketName)
                     .object(objectName)
-                    .expiry(expirySeconds, TimeUnit.SECONDS)
+                    .expiry(actualExpirySeconds, TimeUnit.SECONDS)
                     .build()
             );
+
+            log.debug("Presigned URL generated successfully for: {}/{}", bucketName, objectName);
+            return presignedUrl;
+
         } catch (Exception e) {
-            throw new RuntimeException("Error generating presigned URL for: " + objectName, e);
+            log.error("Error generating presigned URL for: {}/{} - Cause: {}", bucketName, objectName, e.getMessage(), e);
+            throw new RuntimeException("Error generating presigned URL for: " + bucketName + "/" + objectName + ". Cause: " + e.getMessage(), e);
         }
     }
 }

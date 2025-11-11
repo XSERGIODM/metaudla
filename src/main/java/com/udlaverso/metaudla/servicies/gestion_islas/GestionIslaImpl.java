@@ -3,6 +3,7 @@ package com.udlaverso.metaudla.servicies.gestion_islas;
 import com.udlaverso.metaudla.DTOs.isla.IslaDtoCreate;
 import com.udlaverso.metaudla.DTOs.isla.IslaDtoResponse;
 import com.udlaverso.metaudla.entities.Isla;
+import com.udlaverso.metaudla.enums.EstadoBasico;
 import com.udlaverso.metaudla.enums.TipoLike;
 import com.udlaverso.metaudla.mappers.IslaMapper;
 import com.udlaverso.metaudla.repositories.IslaRepository;
@@ -24,8 +25,11 @@ public class GestionIslaImpl implements IGestionIsla{
     private final IslaMapper islaMapper;
 
     @Override
-    public IslaDtoResponse crearIsla(IslaDtoCreate islaDto) {
-        return null;
+    public Isla crearIsla(IslaDtoCreate islaDto) {
+        Isla isla = islaMapper.toEntity(islaDto);
+        isla.setEstado(EstadoBasico.HABILITADO); // Asumiendo que hay un enum EstadoBasico
+        Isla islaGuardada = islaRepository.save(isla);
+        return islaGuardada;
     }
 
     @Override

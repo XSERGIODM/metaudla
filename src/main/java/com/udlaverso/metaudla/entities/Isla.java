@@ -12,6 +12,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Data
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
@@ -31,12 +33,14 @@ public class Isla {
 
     @ElementCollection
     @CollectionTable(name = "isla_imagenes", joinColumns = @JoinColumn(name = "isla_id"))
-    @Column(name = "url_imagen")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Column(name = "url_imagen", length = 65535, columnDefinition = "TEXT")
     List<@Pattern(regexp = "^https?://.*", message = "La URL de imagen debe comenzar con http:// o https://") String> imagenes = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "isla_videos", joinColumns = @JoinColumn(name = "isla_id"))
-    @Column(name = "url_video")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Column(name = "url_video", length = 65535, columnDefinition = "TEXT")
     List<@Pattern(regexp = "^https?://.*", message = "La URL de video debe comenzar con http:// o https://") String> videos = new ArrayList<>();
 
     @Column

@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.UUID;
@@ -68,9 +70,128 @@ public class IslaController {
         return ResponseEntity.ok(gestionIsla.obtenerIslasPorAutor(autorId));
     }
 
-    @PostMapping
-    public ResponseEntity<IslaDtoResponse> crearIsla(@RequestBody IslaDtoCreate islaDtoCreate) {
-        return ResponseEntity.ok(gestionIsla.crearIsla(islaDtoCreate));
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<IslaDtoResponse> crearIsla(@Validated @ModelAttribute IslaDtoCreate islaDtoCreate) {
+        try {
+            // Crear la isla en la base de datos primero
+            Isla isla = gestionIsla.crearIsla(islaDtoCreate);
+
+            // Usar bucket único "isla"
+            String bucketName = "isla";
+            minioService.createBucket(bucketName);
+
+            // Procesar imágenes
+            if (islaDtoCreate.getImagenesArchivos() != null && !islaDtoCreate.getImagenesArchivos().isEmpty()) {
+                for (MultipartFile imagen : islaDtoCreate.getImagenesArchivos()) {
+                    if (imagen != null && !imagen.isEmpty()) {
+                        // Validar tipo de archivo
+                        String contentType = imagen.getContentType();
+                        if (contentType == null || !contentType.startsWith("image/")) {
+                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tipo de archivo no permitido para imagen: " + contentType);
+                        }
+                        // Validar tamaño (ej. máximo 10MB por imagen)
+                        long maxSize = 10 * 1024 * 1024; // 10MB
+                        if (imagen.getSize() > maxSize) {
+                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La imagen es demasiado grande. Máximo permitido: 10MB.");
+                        }
+
+                        // Generar nombre único con prefijo
+                        String originalFilename = imagen.getOriginalFilename();
+                        String extension = originalFilename != null && originalFilename.contains(".") ?
+                                originalFilename.substring(originalFilename.lastIndexOf(".")) : ".jpg";
+                        String objectName = "isla-" + isla.getId() + "/imagen/" + UUID.randomUUID().toString() + extension;
+
+                        // Subir a MinIO
+                        minioService.uploadFile(bucketName, objectName, imagen.getInputStream(), imagen.getSize(), contentType);
+
+                        // Generar URL presigned (válida por 7 días)
+                        String presignedUrl = minioService.getPresignedUrl(bucketName, objectName, 604800);
+
+                        // Agregar URL a la isla
+                        isla.getImagenes().add(presignedUrl);
+                    }
+                }
+            }
+
+            // Procesar videos
+            if (islaDtoCreate.getVideosArchivos() != null && !islaDtoCreate.getVideosArchivos().isEmpty()) {
+                for (MultipartFile video : islaDtoCreate.getVideosArchivos()) {
+                    if (video != null && !video.isEmpty()) {
+                        // Validar tipo de archivo
+                        String contentType = video.getContentType();
+                        if (contentType == null || !contentType.startsWith("video/")) {
+                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tipo de archivo no permitido para video: " + contentType);
+                        }
+                        // Validar tamaño (ej. máximo 50MB por video)
+                        long maxSize = 50 * 1024 * 1024; // 50MB
+                        if (video.getSize() > maxSize) {
+                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El video es demasiado grande. Máximo permitido: 50MB.");
+                        }
+
+                        // Generar nombre único con prefijo
+                        String originalFilename = video.getOriginalFilename();
+                        String extension = originalFilename != null && originalFilename.contains(".") ?
+                                originalFilename.substring(originalFilename.lastIndexOf(".")) : ".mp4";
+                        String objectName = "isla-" + isla.getId() + "/video/" + UUID.randomUUID().toString() + extension;
+
+                        // Subir a MinIO
+                        minioService.uploadFile(bucketName, objectName, video.getInputStream(), video.getSize(), contentType);
+
+                        // Generar URL presigned (válida por 7 días)
+                        String presignedUrl = minioService.getPresignedUrl(bucketName, objectName, 604800);
+
+                        // Agregar URL a la isla
+                        isla.getVideos().add(presignedUrl);
+                    }
+                }
+            }
+
+            // Procesar archivo de descarga
+            if (islaDtoCreate.getArchivoDescarga() != null && !islaDtoCreate.getArchivoDescarga().isEmpty()) {
+                MultipartFile archivo = islaDtoCreate.getArchivoDescarga();
+                // Validar tipo de archivo (permitir varios tipos comunes)
+                String contentType = archivo.getContentType();
+                if (contentType == null || (!contentType.startsWith("application/") && !contentType.equals("text/plain"))) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tipo de archivo no permitido para descarga: " + contentType);
+                }
+                // Validar tamaño (ej. máximo 100MB)
+                long maxSize = 100 * 1024 * 1024; // 100MB
+                if (archivo.getSize() > maxSize) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El archivo de descarga es demasiado grande. Máximo permitido: 100MB.");
+                }
+
+                // Generar nombre único con prefijo
+                String originalFilename = archivo.getOriginalFilename();
+                String extension = originalFilename != null && originalFilename.contains(".") ?
+                        originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
+                String objectName = "isla-" + isla.getId() + "/descarga/" + UUID.randomUUID().toString() + extension;
+
+                // Subir a MinIO
+                minioService.uploadFile(bucketName, objectName, archivo.getInputStream(), archivo.getSize(), contentType);
+
+                // Generar URL presigned (válida por 7 días)
+                String presignedUrl = minioService.getPresignedUrl(bucketName, objectName, 604800);
+
+                // Establecer link de descarga
+                isla.setLinkDescarga(presignedUrl);
+            }
+
+            // Actualizar la isla en la base de datos con las URLs generadas
+            islaRepository.save(isla);
+
+            logger.info("Isla creada exitosamente con ID {} y archivos multimedia subidos", isla.getId());
+
+            // Retornar IslaDtoResponse con las URLs incluidas
+            return ResponseEntity.ok(gestionIsla.obtenerIslaPorId(isla.getId()).orElseThrow(() ->
+                    new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al obtener la isla creada")));
+
+        } catch (ResponseStatusException e) {
+            logger.error("Error de validación al crear isla: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Error interno al crear isla: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor", e);
+        }
     }
 
     @PostMapping("/{id}/upload")
@@ -92,15 +213,15 @@ public class IslaController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El archivo es demasiado grande. Máximo permitido: 50MB.");
             }
 
-            // Crear bucket dedicado para la isla
-            String bucketName = "isla-" + id;
+            // Usar bucket único "isla"
+            String bucketName = "isla";
             minioService.createBucket(bucketName);
 
-            // Generar nombre único para el archivo
+            // Generar nombre único para el archivo con prefijo
             String originalFilename = file.getOriginalFilename();
             String extension = originalFilename != null && originalFilename.contains(".") ?
                     originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
-            String objectName = UUID.randomUUID().toString() + extension;
+            String objectName = "isla-" + id + "/archivo/" + UUID.randomUUID().toString() + extension;
 
             // Subir archivo a MinIO
             minioService.uploadFile(bucketName, objectName, file.getInputStream(), file.getSize(), contentType);

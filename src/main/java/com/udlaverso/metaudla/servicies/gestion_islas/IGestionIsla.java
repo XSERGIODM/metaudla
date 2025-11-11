@@ -2,6 +2,7 @@ package com.udlaverso.metaudla.servicies.gestion_islas;
 
 import com.udlaverso.metaudla.DTOs.isla.IslaDtoCreate;
 import com.udlaverso.metaudla.DTOs.isla.IslaDtoResponse;
+import com.udlaverso.metaudla.entities.Isla;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -17,9 +18,9 @@ public interface IGestionIsla {
     /**
      * Crear una nueva isla
      * @param islaDto Datos de la isla a crear
-     * @return DTO de respuesta con la isla creada
+     * @return Entidad Isla creada (para permitir procesamiento adicional en el controlador)
      */
-    IslaDtoResponse crearIsla(IslaDtoCreate islaDto);
+    Isla crearIsla(IslaDtoCreate islaDto);
 
     /**
      * Obtener una isla por su ID
