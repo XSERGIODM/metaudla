@@ -41,7 +41,7 @@ public class Initializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        /*// Crear usuarios por defecto si no hay ninguno
+        // Crear usuarios por defecto si no hay ninguno
         if (usuarioRepository.count() == 0) {
             Usuario admin = new Usuario();
             admin.setNombre("Administrador");
@@ -146,10 +146,10 @@ public class Initializer implements CommandLineRunner {
 
             // Crear bucket único "isla" y cargar assets a MinIO y actualizar URLs
             cargarAssetsAMinio();
-        }*/
+        }
     }
 
-    /*private void cargarAssetsAMinio() {
+    private void cargarAssetsAMinio() {
         log.info("Iniciando carga de assets a MinIO...");
 
         try {
@@ -278,5 +278,5 @@ public class Initializer implements CommandLineRunner {
         } else {
             return "application/octet-stream"; // Tipo por defecto
         }
-    }*/
+    }
 }
